@@ -1,4 +1,4 @@
-package com.dyma.tennis.rest;
+package com.dyma.tennis;
 
 public enum ApplicationStatus {
     OK,KO;
