@@ -11,7 +11,7 @@ public class HealthCheckController {
     @Autowired
     private HealthCheckService healthCheckService;
     @GetMapping("/healthcheck")
-    public HealthCheck healthCheck(){
-        return healthCheckService.healthCheck();
+    public HealthCheck healthcheck(){
+        return healthCheckService.healthcheck();
     }
 }
