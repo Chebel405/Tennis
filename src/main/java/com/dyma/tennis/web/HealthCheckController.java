@@ -1,4 +1,4 @@
-package com.dyma.tennis.rest;
+package com.dyma.tennis.web;
 
 import com.dyma.tennis.HealthCheck;
 import com.dyma.tennis.service.HealthCheckService;
