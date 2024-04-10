@@ -17,6 +17,7 @@ class TennisApplicationTests {
 	private HealthCheckRepository healthCheckRepository;
 	@Autowired
 	private HealthCheckService healthCheckService;
+
 	@Test
 	void contextLoads() {
 		Assertions.assertThat(healthCheckController).isNotNull();
