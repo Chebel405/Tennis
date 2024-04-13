@@ -19,7 +19,7 @@ public class HealthCheckController {
     @Autowired
     private HealthCheckService healthCheckService;
 
-    //@Operation = Décrit ce que fait cette méthode
+    //@Operation = Décrit ce que fait cette méthode (healthcheck())
     @Operation(summary = "Returns application status", description = "Returns the application status")
     //@ApiResponses = Indique les différentes responses que peut retourner notre méthode
     @ApiResponses(value = {
