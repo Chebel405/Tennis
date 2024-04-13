@@ -51,7 +51,27 @@ public class PlayerController {
                             schema = @Schema(implementation = Player.class))})
     })
     @PostMapping
-    public Player createPlayer(@RequestBody Player player){
+    public Player Player(@RequestBody Player player){
         return player;
+    }
+
+    @Operation(summary = "Updates a player", description = "Updates a player")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated a player",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Player.class))})
+    })
+    @PutMapping
+    public Player updatePlayer(@RequestBody Player player){
+        return player;
+    }
+
+    @Operation(summary = "Deletes a player", description = "Deletes a player")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Player has been deleted")
+    })
+    @DeleteMapping("{lastName}")
+    public void DeletePlayerByLastName(@PathVariable("lastName") String lastName){
+
     }
 }
