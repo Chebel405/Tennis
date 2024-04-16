@@ -2,6 +2,7 @@ package com.dyma.tennis.web;
 
 import com.dyma.tennis.HealthCheck;
 import com.dyma.tennis.Player;
+import com.dyma.tennis.PlayerList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,8 +30,8 @@ public class PlayerController {
                             array = @ArraySchema (schema = @Schema(implementation = Player.class)))})
     })
     @GetMapping
-    private List<Player> list(){
-        return Collections.emptyList();
+    public List<Player> list(){
+        return PlayerList.ALL;
     }
 
     @Operation(summary = "Finds a player with lastName", description = "Finds player with lastName")
