@@ -1,6 +1,7 @@
 package com.dyma.tennis;
 
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 
@@ -12,6 +13,6 @@ public record Player(
         @NotBlank String lastName,
         // @PastOrPresent Obliger à ce que la date soit dans le présent ou dans le passé
         @PastOrPresent LocalDate birthDate,
-        Rank rank) {
+        @Valid Rank rank) {
 
 }
