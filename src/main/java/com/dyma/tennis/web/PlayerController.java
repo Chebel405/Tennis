@@ -42,7 +42,10 @@ public class PlayerController {
     })
     @GetMapping("{lastName}")
     public Player getByLastName(@PathVariable("lastName") String lastName){
-        return null;
+        return PlayerList.ALL.stream()
+                .filter(player -> player.lastName().equals(lastName))
+                .findFirst()
+                .orElse(null);
     }
 
     @Operation(summary = "Creates a player", description = "Creates a player")
