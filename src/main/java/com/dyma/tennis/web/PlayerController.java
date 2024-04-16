@@ -29,6 +29,7 @@ public class PlayerController {
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema (schema = @Schema(implementation = Player.class)))})
     })
+    // Affichage de tout les clients
     @GetMapping
     public List<Player> list(){
         return PlayerList.ALL;
@@ -40,9 +41,13 @@ public class PlayerController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Player.class))})
     })
+
+    //
     @GetMapping("{lastName}")
     public Player getByLastName(@PathVariable("lastName") String lastName){
+        // Appel par le lastName
         return PlayerList.ALL.stream()
+                // Filtrage, selectionner dans le grp de joueur un joueur par son lastName et equals pour selectionner le premier lastName trouvé
                 .filter(player -> player.lastName().equals(lastName))
                 .findFirst()
                 .orElse(null);
