@@ -51,7 +51,7 @@ public class PlayerController {
                 // Filtrage, selectionner dans le grp de joueur un joueur par son lastName et equals pour selectionner le premier lastName trouvé
                 .filter(player -> player.lastName().equals(lastName))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow();
     }
 
     @Operation(summary = "Creates a player", description = "Creates a player")
@@ -72,7 +72,7 @@ public class PlayerController {
                             schema = @Schema(implementation = Player.class))})
     })
     @PutMapping
-    public Player updatePlayer(@RequestBody Player player){
+    public Player updatePlayer(@RequestBody @Valid Player player){
         return player;
     }
 
