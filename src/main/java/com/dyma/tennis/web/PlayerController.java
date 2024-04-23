@@ -45,13 +45,16 @@ public class PlayerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Player.class))})
+                            schema = @Schema(implementation = Player.class))}),
+
+            @ApiResponse(responseCode = "404", description = "Player with lastName wasn't found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))})
     })
 
     //
     @GetMapping("{lastName}")
     public Player getByLastName(@PathVariable("lastName") String lastName){
-        // Appel par le lastName
         return playerService.getByLastName(lastName);
     }
 

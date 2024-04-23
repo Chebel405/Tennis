@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
+
     //Affichage de la liste dans l'ordre de position
     public List<Player>getAllPlayers(){
         return PlayerList.ALL.stream()
@@ -22,6 +24,7 @@ public class PlayerService {
         return PlayerList.ALL.stream()
                 .filter(player -> player.lastName().equals(lastName))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new PlayerNotFoundException(lastName));
+
     }
 }
