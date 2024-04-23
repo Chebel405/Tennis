@@ -16,4 +16,12 @@ public class PlayerService {
                 .sorted(Comparator.comparing(player -> player.rank().position()))
                 .collect(Collectors.toList());
     }
+
+    // Récupérer un joueur par son nom de famille
+    public Player getByLastName(String lastName){
+        return PlayerList.ALL.stream()
+                .filter(player -> player.lastName().equals(lastName))
+                .findFirst()
+                .orElseThrow();
+    }
 }

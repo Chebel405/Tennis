@@ -52,11 +52,7 @@ public class PlayerController {
     @GetMapping("{lastName}")
     public Player getByLastName(@PathVariable("lastName") String lastName){
         // Appel par le lastName
-        return PlayerList.ALL.stream()
-                // Filtrage, selectionner dans le grp de joueur un joueur par son lastName et equals pour selectionner le premier lastName trouvé
-                .filter(player -> player.lastName().equals(lastName))
-                .findFirst()
-                .orElseThrow();
+        return playerService.getByLastName(lastName);
     }
 
     @Operation(summary = "Creates a player", description = "Creates a player")
