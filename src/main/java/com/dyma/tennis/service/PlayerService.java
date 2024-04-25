@@ -2,12 +2,11 @@ package com.dyma.tennis.service;
 
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
-import com.dyma.tennis.PlayerToRegister;
+import com.dyma.tennis.PlayerToSave;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,13 +29,31 @@ public class PlayerService {
     }
 
     // Créer un joueur
-    public Player create(PlayerToRegister playerToRegister){
-        RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.ALL, playerToRegister);
-        List<Player> players =  rankingCalculator.getNewPlayersRanking();
+    public Player create(PlayerToSave playerToSave){
+        return getPlayerNewRanking(PlayerList.ALL, playerToSave);
+    }
+
+    //Mise à jour d'un joueur
+    public Player update(PlayerToSave playerToSave){
+        getByLastName(playerToSave.lastName());
+
+        List<Player> playersWithoutPlayerToUpdate = PlayerList.ALL.stream()
+                .filter(player -> !player.lastName().equals(playerToSave.lastName()))
+                .toList();
+        return getPlayerNewRanking(playersWithoutPlayerToUpdate, playerToSave);
+    }
+
+    private Player getPlayerNewRanking(List<Player> existingPlayers, PlayerToSave playerToSave){
+        RankingCalculator rankingCalculator = new RankingCalculator(existingPlayers, playerToSave);
+        List<Player> players = rankingCalculator.getNewPlayersRanking();
 
         return players.stream()
-                .filter(player -> player.lastName().equals(playerToRegister.lastName()))
+                .filter(player -> player.lastName().equals(playerToSave.lastName()))
                 .findFirst().get();
+
+
+
+
     }
 
 }
