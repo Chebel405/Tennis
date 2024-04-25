@@ -84,10 +84,13 @@ public class PlayerController {
 
     @Operation(summary = "Deletes a player", description = "Deletes a player")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Player has been deleted")
+            @ApiResponse(responseCode = "204", description = "Player has been deleted"),
+            @ApiResponse(responseCode = "404", description = "Player with lastName wasn't found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))})
     })
     @DeleteMapping("{lastName}")
     public void DeletePlayerByLastName(@PathVariable("lastName") String lastName){
-
+        playerService.delete(lastName);
     }
 }
