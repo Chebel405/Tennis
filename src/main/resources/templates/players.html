@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Players List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h2>Players List</h2>
+<table>
+    <thead>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Birth Date</th>
+        <th>Rank Position</th>
+        <th>Rank Points</th>
+    </tr>
+    </thead>
+    <tbody id="playersTableBody">
+    <!-- Table rows will be dynamically populated here -->
+    </tbody>
+</table>
+
+<script>
+    // Function to fetch players data from the API endpoint
+    async function fetchPlayers() {
+        try {
+            const response = await fetch('/players');
+            const players = await response.json();
+            displayPlayers(players);
+        } catch (error) {
+            console.error('Error fetching players:', error);
+        }
+    }
+
+    // Function to display players in the HTML table
+    function displayPlayers(players) {
+        const playersTableBody = document.getElementById('playersTableBody');
+        players.forEach(player => {
+            const row = `<tr>
+                            <td>${player.firstName}</td>
+                            <td>${player.lastName}</td>
+                            <td>${player.birthDate}</td>
+                            <td>${player.rank.position}</td>
+                            <td>${player.rank.points}</td>
+                        </tr>`;
+            playersTableBody.innerHTML += row;
+        });
+    }
+
+    // Call fetchPlayers() when the page loads
+    window.onload = fetchPlayers;
+</script>
+</body>
+</html>

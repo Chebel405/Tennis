@@ -42,5 +42,8 @@ BEGIN
         INSERT INTO player (last_name, first_name, birth_date, points, rank)
         VALUES ('Murray', 'Andy', '1987-05-15', 2000, 4);
     END IF;
+
 END
+$$;
+
 
