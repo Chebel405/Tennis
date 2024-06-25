@@ -49,53 +49,42 @@ public class PlayerService {
 
     }
 
+
     // Créer un joueur
     public Player create(PlayerToSave playerToSave){
-        PlayerEntity playerEntity = new PlayerEntity();
-        playerEntity.setLastName(playerToSave.lastName());
-        playerEntity.setFirstName(playerToSave.firstName());
-        playerEntity.setBirthDate(playerToSave.birthDate());
-        playerEntity.setPoints(playerToSave.points());
-        playerEntity.setRank(999999999);
+        Optional<PlayerEntity>playerToCreate = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
+        if (playerToCreate.isPresent()) {
+            throw new PlayerAlreadyExistsException(playerToSave.lastName());
+        }
+
+        PlayerEntity playerEntity = new PlayerEntity(
+                playerToSave.lastName(),
+                playerToSave.firstName(),
+                playerToSave.birthDate(),
+                playerToSave.points(),
+                999999999);
+
 
         playerRepository.save(playerEntity);
 
-        return getPlayerNewRanking(PlayerList.ALL, playerToSave);
+        RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
+        List<PlayerEntity>updatedPlayers = rankingCalculator.getNewPlayersRanking();
+        playerRepository.saveAll(updatedPlayers);
+
+
+        return getByLastName(playerEntity.getLastName());
     }
-
-
-
 
 
     //Mise à jour d'un joueur
     public Player update(PlayerToSave playerToSave){
-        getByLastName(playerToSave.lastName());
-
-        List<Player> playersWithoutPlayerToUpdate = PlayerList.ALL.stream()
-                .filter(player -> !player.lastName().equals(playerToSave.lastName()))
-                .toList();
-        return getPlayerNewRanking(playersWithoutPlayerToUpdate, playerToSave);
+        return null;
     }
 
     public void delete(String lastName){
-        Player playerToDelete = getByLastName(lastName);
 
-        PlayerList.ALL = PlayerList.ALL.stream()
-                .filter(player -> !player.lastName().equals(lastName))
-                .toList();
-
-        RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.ALL);
-        rankingCalculator.getNewPlayersRanking();
     }
 
-    private Player getPlayerNewRanking(List<Player> existingPlayers, PlayerToSave playerToSave){
-        RankingCalculator rankingCalculator = new RankingCalculator(existingPlayers, playerToSave);
-        List<Player> players = rankingCalculator.getNewPlayersRanking();
-
-        return players.stream()
-                .filter(player -> player.lastName().equals(playerToSave.lastName()))
-                .findFirst().get();
-    }
 
 
 }

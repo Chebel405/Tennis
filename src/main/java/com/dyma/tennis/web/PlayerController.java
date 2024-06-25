@@ -60,7 +60,10 @@ public class PlayerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created a player",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PlayerToSave.class))})
+                            schema = @Schema(implementation = PlayerToSave.class))}),
+            @ApiResponse(responseCode = "400", description = "Player exists",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))})
     })
     @PostMapping
     public Player createPlayer(@RequestBody @Valid PlayerToSave playerToSave){
