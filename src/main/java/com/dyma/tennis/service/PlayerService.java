@@ -35,7 +35,7 @@ public class PlayerService {
 
     // Récupérer un joueur par son nom de famille
     public Player getByLastName(String lastName){
-        Optional<PlayerEntity> player = playerRepository.findOneByLastName(lastName);
+        Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(lastName);
         if(player.isEmpty()){
             throw new PlayerNotFoundException(lastName);
         }

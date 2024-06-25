@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface PlayerRepository extends JpaRepository<PlayerEntity, Long> {
     // Declaration de la méthode
-    Optional<PlayerEntity> findOneByLastName(String lastName);
+    Optional<PlayerEntity> findOneByLastNameIgnoreCase(String lastName);
 }
