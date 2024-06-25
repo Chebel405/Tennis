@@ -107,6 +107,15 @@ public class PlayerService {
         return getByLastName(updatedPlayer.getLastName());
     }
 
+    /**
+     * Méthode Delete
+     *      1/ Vérifier que le joueur que l'on souhaite supprimer existe
+     *      2/ Supprimer le joueur
+     *      3/ Recalculer l'ensemble des classements
+     *      4/ Mettre à jour les joueurs pour tenir compte du nouveau classement
+     * @param lastName
+     */
+
     public void delete(String lastName){
         Optional<PlayerEntity>playerToDelete = playerRepository.findOneByLastNameIgnoreCase(lastName);
         if (playerToDelete.isEmpty()) {
