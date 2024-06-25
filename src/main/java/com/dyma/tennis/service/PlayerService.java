@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,10 +35,18 @@ public class PlayerService {
 
     // Récupérer un joueur par son nom de famille
     public Player getByLastName(String lastName){
-        return PlayerList.ALL.stream()
-                .filter(player -> player.lastName().equals(lastName))
-                .findFirst()
-                .orElseThrow(() -> new PlayerNotFoundException(lastName));
+        Optional<PlayerEntity> player = playerRepository.findOneByLastName(lastName);
+        if(player.isEmpty()){
+            throw new PlayerNotFoundException(lastName);
+        }
+
+        PlayerEntity playerEntity = player.get();
+        return new Player(
+                playerEntity.getFirstName(),
+                playerEntity.getLastName(),
+                playerEntity.getBirthDate(),
+                new Rank(playerEntity.getRank(), playerEntity.getPoints())
+        );
 
     }
 
