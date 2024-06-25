@@ -12,6 +12,13 @@ import java.util.List;
 
 public class RankingCalculator {
     // Liste de joueurs actuels
+
+    /**
+     * Trier la liste des joueurs en base de données (en fonction du nombre de points)
+     * La position dans la liste triée détermine le classement
+     * Les joueurs sont mis à jour
+     * Le nouveau classement est renvoyé
+     */
     private final List<PlayerEntity>currentPlayersRanking;
 
     public RankingCalculator(List<PlayerEntity> currentPlayersRanking) {

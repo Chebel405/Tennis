@@ -50,8 +50,17 @@ public class PlayerService {
     }
 
 
-    // Créer un joueur
+    /**
+     * Création d'un joueur
+     *      Vérifier que le joueur n'existe pas déjà
+     *      Créer le nouveau joueur
+     *      Recalculer l'ensemble des classements
+     *      Mettre à jour tous les joueurs
+     * @param playerToSave
+     * @return
+     */
     public Player create(PlayerToSave playerToSave){
+        //Vérifier que le joueur n'existe pas
         Optional<PlayerEntity>playerToCreate = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
         if (playerToCreate.isPresent()) {
             throw new PlayerAlreadyExistsException(playerToSave.lastName());
@@ -64,13 +73,16 @@ public class PlayerService {
                 playerToSave.points(),
                 999999999);
 
-
+        /**
+         *      Le service enregistre le nouveau joueur
+         *      RankingCalculator : recalculer le classement
+         *      PlayerRepository : Mettre à jour les joueurs
+         *      GetByLastName retourne le joueur créé
+         */
         playerRepository.save(playerEntity);
-
         RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
         List<PlayerEntity>updatedPlayers = rankingCalculator.getNewPlayersRanking();
         playerRepository.saveAll(updatedPlayers);
-
 
         return getByLastName(playerEntity.getLastName());
     }
