@@ -40,20 +40,32 @@ public class PlayerService {
             throw new PlayerNotFoundException(lastName);
         }
 
-        PlayerEntity playerEntity = player.get();
         return new Player(
-                playerEntity.getFirstName(),
-                playerEntity.getLastName(),
-                playerEntity.getBirthDate(),
-                new Rank(playerEntity.getRank(), playerEntity.getPoints())
+                player.get().getFirstName(),
+                player.get().getLastName(),
+                player.get().getBirthDate(),
+                new Rank(player.get().getRank(), player.get().getPoints())
         );
 
     }
 
     // Créer un joueur
     public Player create(PlayerToSave playerToSave){
+        PlayerEntity playerEntity = new PlayerEntity();
+        playerEntity.setLastName(playerToSave.lastName());
+        playerEntity.setFirstName(playerToSave.firstName());
+        playerEntity.setBirthDate(playerToSave.birthDate());
+        playerEntity.setPoints(playerToSave.points());
+        playerEntity.setRank(999999999);
+
+        playerRepository.save(playerEntity);
+
         return getPlayerNewRanking(PlayerList.ALL, playerToSave);
     }
+
+
+
+
 
     //Mise à jour d'un joueur
     public Player update(PlayerToSave playerToSave){
