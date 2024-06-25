@@ -22,10 +22,11 @@ public class PlayerService {
     //Affichage de la liste dans l'ordre de position
     public List<Player>getAllPlayers(){
         return playerRepository.findAll().stream()
-                .map(playerEntity -> new Player(playerEntity.getFirstName(),
-                        playerEntity.getLastName(),
-                        playerEntity.getBirthDate(),
-                        new Rank(playerEntity.getRank(), playerEntity.getPoints()))
+                .map(player-> new Player(
+                        player.getFirstName(),
+                        player.getLastName(),
+                        player.getBirthDate(),
+                        new Rank(player.getRank(), player.getPoints()))
                 )
                 .sorted(Comparator.comparing(player -> player.rank().position()))
                 .collect(Collectors.toList());
