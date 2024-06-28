@@ -20,6 +20,10 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
+    public PlayerService(PlayerRepository playerRepository){
+        this.playerRepository = playerRepository;
+    }
+
     //Affichage de la liste dans l'ordre de position
     public List<Player>getAllPlayers(){
         return playerRepository.findAll().stream()
@@ -117,12 +121,12 @@ public class PlayerService {
      */
 
     public void delete(String lastName){
-        Optional<PlayerEntity>playerToDelete = playerRepository.findOneByLastNameIgnoreCase(lastName);
-        if (playerToDelete.isEmpty()) {
+        Optional<PlayerEntity>playerDelete = playerRepository.findOneByLastNameIgnoreCase(lastName);
+        if (playerDelete.isEmpty()) {
             throw new PlayerNotFoundException(lastName);
         }
 
-        playerRepository.delete(playerToDelete.get());
+        playerRepository.delete(playerDelete.get());
 
         RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
         List<PlayerEntity>newRanking = rankingCalculator.getNewPlayersRanking();
