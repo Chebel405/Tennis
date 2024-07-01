@@ -75,5 +75,17 @@ public class PlayerServiceIntegrationTest {
                 .containsExactly(Tuple.tuple("NadalTest", 1),Tuple.tuple("FedererTest", 2));
     }
 
+    @Test
+    public void shouldFailToDelete_WhenPlayerDoesNotExist(){
+        //Given
+        String playerToDelete = "DoeTest";
+
+        //When /Then
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(PlayerNotFoundException.class, () -> {
+            playerService.delete(playerToDelete);
+        });
+        Assertions.assertThat(exception.getMessage()).isEqualTo("Player with last name DoeTest couldn't be found");
+
+    }
 
 }
