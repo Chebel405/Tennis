@@ -3,6 +3,7 @@ package com.dyma.tennis.service;
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerToSave;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,8 +11,12 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+// Dirty.. met à jour la bdd
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PlayerServiceIntegrationTest {
     @Autowired
@@ -27,8 +32,8 @@ public class PlayerServiceIntegrationTest {
         );
 
         //When
-
-        Player createdPlayer = playerService.create(playerToSave);
+        playerService.create(playerToSave);
+        Player createdPlayer = playerService.getByLastName(playerToSave.lastName());
 
         //Then
         Assertions.assertThat(createdPlayer.firstName()).isEqualTo("John");
@@ -36,6 +41,38 @@ public class PlayerServiceIntegrationTest {
         Assertions.assertThat(createdPlayer.birthDate()).isEqualTo(LocalDate.of(2000, Month.JANUARY, 1));
         Assertions.assertThat(createdPlayer.rank().points()).isEqualTo(10000);
         Assertions.assertThat(createdPlayer.rank().position()).isEqualTo(1);
+    }
+    @Test
+    public void shouldUpdatePlayer() {
+        //Given
+        PlayerToSave playerToSave = new PlayerToSave(
+                "Rafael",
+                "NadalTest",
+                LocalDate.of(1986, Month.JUNE, 3),
+                1000
+        );
+
+        //When
+        playerService.update(playerToSave);
+        Player updatedPlayer = playerService.getByLastName(playerToSave.lastName());
+
+        // Then
+        Assertions.assertThat(updatedPlayer.rank().position()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldDeletePlayer(){
+        //Given
+        String playerToDelete = "DjokovicTest";
+
+        //When
+        playerService.delete(playerToDelete);
+        List<Player> allPlayers = playerService.getAllPlayers();
+
+        //Then
+        Assertions.assertThat(allPlayers)
+                .extracting("lastName", "rank.position")
+                .containsExactly(Tuple.tuple("NadalTest", 1),Tuple.tuple("FedererTest", 2));
     }
 
 
