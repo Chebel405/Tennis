@@ -32,7 +32,10 @@ public class PlayerServiceIntegrationTest {
 
         //Then
         Assertions.assertThat(createdPlayer.firstName()).isEqualTo("John");
-
+        Assertions.assertThat(createdPlayer.lastName()).isEqualTo("Doe");
+        Assertions.assertThat(createdPlayer.birthDate()).isEqualTo(LocalDate.of(2000, Month.JANUARY, 1));
+        Assertions.assertThat(createdPlayer.rank().points()).isEqualTo(10000);
+        Assertions.assertThat(createdPlayer.rank().position()).isEqualTo(1);
     }
 
 
