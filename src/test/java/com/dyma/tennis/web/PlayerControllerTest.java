@@ -39,6 +39,20 @@ public class PlayerControllerTest {
                 .andExpect(jsonPath("$[3].lastName", CoreMatchers.is("Murray")));
 
     }
+    @Test
+    public void shouldRetrievePlayer() throws Exception {
+        //Given
+        String playerToRetrieve = "nadal";
+        Mockito.when(playerService.getByLastName(playerToRetrieve)).thenReturn(PlayerList.RAPHAEL_NADAL);
+
+        //When / Then
+        mockMvc.perform(get("/players/nadal"))
+                //On assure du status
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastName", CoreMatchers.is("Nadal")))
+                .andExpect(jsonPath("$.rank.position", CoreMatchers.is(1)));
+
+    }
 
 
 }
