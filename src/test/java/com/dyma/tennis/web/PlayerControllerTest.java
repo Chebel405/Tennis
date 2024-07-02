@@ -1,6 +1,7 @@
 package com.dyma.tennis.web;
 
 import com.dyma.tennis.data.PlayerList;
+import com.dyma.tennis.service.PlayerNotFoundException;
 import com.dyma.tennis.service.PlayerService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,20 @@ public class PlayerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lastName", CoreMatchers.is("Nadal")))
                 .andExpect(jsonPath("$.rank.position", CoreMatchers.is(1)));
+
+    }
+
+    @Test
+    public void shouldReturn404NotFound_WhenPlayerDoesNotExist() throws Exception {
+        //Given
+        String playerToRetrieve = "doe";
+        Mockito.when(playerService.getByLastName(playerToRetrieve)).thenThrow(new PlayerNotFoundException("Player doe does not exist"));
+
+        //When / Then
+        mockMvc.perform(get("/players/doe"))
+                //On assure du status
+                .andExpect(status().isNotFound());
+
 
     }
 
