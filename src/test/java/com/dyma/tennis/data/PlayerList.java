@@ -1,4 +1,7 @@
-package com.dyma.tennis;
+package com.dyma.tennis.data;
+
+import com.dyma.tennis.Player;
+import com.dyma.tennis.Rank;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -36,5 +39,5 @@ public class PlayerList {
     );
 
 
-    public static List<Player> ALL = Arrays.asList( ANDY_MURRAY, NOVAK_DJOKOVIC, ROGER_FEDERER,RAPHAEL_NADAL);
+    public static List<Player> ALL = Arrays.asList( RAPHAEL_NADAL, NOVAK_DJOKOVIC, ROGER_FEDERER, ANDY_MURRAY);
 }

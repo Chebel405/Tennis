@@ -1,13 +1,9 @@
 package com.dyma.tennis.service;
 
-import com.dyma.tennis.Player;
-import com.dyma.tennis.PlayerList;
-import com.dyma.tennis.PlayerToSave;
-import com.dyma.tennis.Rank;
+
 import com.dyma.tennis.data.PlayerEntity;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class RankingCalculator {
