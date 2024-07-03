@@ -37,13 +37,16 @@ public class PlayerEntity {
         this.rank = rank;
     }
 
-    public PlayerEntity(Long id, String firstName, LocalDate birthDate, Integer points, Integer rank) {
+    public PlayerEntity(Long id, String lastName, String firstName, LocalDate birthDate, Integer points, Integer rank) {
         this.id = id;
+        this.lastName = lastName;
         this.firstName = firstName;
         this.birthDate = birthDate;
         this.points = points;
         this.rank = rank;
     }
+
+    public Long getId() { return id; }
 
     public String getLastName() {
         return lastName;

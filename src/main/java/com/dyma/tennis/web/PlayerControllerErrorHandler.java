@@ -22,16 +22,6 @@ public class PlayerControllerErrorHandler {
         return new Error(ex.getMessage());
     }
 
-
-
-    @ExceptionHandler(PlayerAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Error handlePlayerAlreadyExistsException(PlayerAlreadyExistsException ex){
-        return new Error(ex.getMessage());
-    }
-
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(MethodArgumentNotValidException ex){
@@ -43,4 +33,11 @@ public class PlayerControllerErrorHandler {
         });
         return errors;
     }
+
+    @ExceptionHandler(PlayerAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Error handlePlayerAlreadyExistsException(PlayerAlreadyExistsException ex){
+        return new Error(ex.getMessage());
+    }
+
 }
