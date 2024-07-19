@@ -30,12 +30,10 @@ public class DymaUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        userRepository.findOneWithRolesByLoginIgnoreCase(login)
+        return userRepository.findOneWithRolesByLoginIgnoreCase(login)
                 .map(this::createSecurityUser)
                 .orElseThrow(() -> new UsernameNotFoundException("User with login " + login + " could not be found"));
 
-
-        return null;
     }
 
     /**

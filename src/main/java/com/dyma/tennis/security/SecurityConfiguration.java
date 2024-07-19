@@ -33,7 +33,7 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Configure le AuthentificationManager avec un DeoAuthenticationProvider.
+     * Configure le AuthentificationManager avec un DaoAuthenticationProvider.
      *
      * @param userDetailsService le service pour récupérer les informations de l'utilisateur.
      * @param passwordEncoder l'encodeur de mots de passe.
@@ -59,8 +59,13 @@ public class SecurityConfiguration {
     //Authentification obligatoire pour l'execution des requêtes
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
-                        authorization -> authorization.anyRequest().authenticated());
+                        authorization -> authorization
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/accounts/login").permitAll()
+                                .anyRequest().authenticated());
         return http.build();
     }
 }

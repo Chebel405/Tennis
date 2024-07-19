@@ -43,21 +43,6 @@ ALTER SEQUENCE user_id_seq OWNED BY player.id;
 
 ALTER TABLE IF EXISTS public.dyma_user OWNER to postgres;
 
-CREATE SEQUENCE user_id_seq;
-
-CREATE TABLE dyma_user (
-    id integer NOT NULL DEFAULT nextval('user_id_seq'),
-    login character varying(50) NOT NULL,
-    password character varying(60) NOT NULL,
-    last_name character varying(50) NOT NULL,
-    first_name character varying(50) NOT NULL,
-    PRIMARY KEY (id)
-);
-
-ALTER SEQUENCE user_id_seq OWNED BY player.id;
-
-ALTER TABLE IF EXISTS public.dyma_user OWNER to postgres;
-
 INSERT INTO public.dyma_user(login, password, last_name, first_name)
 	VALUES ('admin', '$2a$12$RkcdJn2kLrAS9fmvDv/CWehqID8nB3XBWXOtazhQ2PY1ZFwDB3L76', 'Dyma', 'Admin');
 

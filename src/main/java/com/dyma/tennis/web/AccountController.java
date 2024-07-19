@@ -2,21 +2,20 @@ package com.dyma.tennis.web;
 
 import com.dyma.tennis.UserCredentials;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.server.authentication.logout.SecurityContextServerLogoutHandler;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller pour gérer les opérations liées aux comptes utilisateurs.
@@ -30,6 +29,8 @@ public class AccountController {
     private AuthenticationManagerBuilder authenticationManagerBuilder;
 
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+
+    private final SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 
     /**
      * Authentifie un utilisateur avec ses informations d'identification et initialise le context de sécurité.
@@ -53,6 +54,11 @@ public class AccountController {
 
         //Sauvegarde le contexte de sécurité dans la session HTTP
         securityContextRepository.saveContext(securityContext, request, response);
+    }
+    @GetMapping("/logout")
+    public void logout(@RequestBody @Valid Authentication authentication, HttpServletRequest request, HttpServletResponse response){
+        securityContextLogoutHandler.logout(request, response, authentication);
+
     }
 
 

@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "dyma-user", schema = "public")
+@Table(name = "dyma_user", schema = "public")
 public class UserEntity {
 
     @Id
@@ -34,7 +34,6 @@ public class UserEntity {
     private Set<RoleEntity> roles = new HashSet<>();
 
     public UserEntity(){
-
     }
 
 
