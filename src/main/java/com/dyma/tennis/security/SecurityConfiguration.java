@@ -60,7 +60,17 @@ public class SecurityConfiguration {
     //Authentification obligatoire pour l'execution des requêtes
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // Désactive la protection CSRF
+                .headers(headers ->
+                        headers
+                                .contentSecurityPolicy(csp ->
+                                        csp.policyDirectives("default-src 'self' data:; style-src 'self' 'unsafe-inline';") // Définit la politique de sécurité du contenu
+                                )
+                                .frameOptions(frameOptionsConfig -> frameOptionsConfig.deny()) // Empêche le site d'être affiché dans un iframe
+                                .permissionsPolicy(permissionsPolicyConfig -> permissionsPolicyConfig.policy(
+                                        "fullscreen=(self), geolocation=(), microphone=(), camera=()" // Définit les politiques de permissions
+                                ))
+                )
                 .authorizeHttpRequests(authorization ->
                         authorization
                                 .requestMatchers("/healthcheck/**").permitAll()
