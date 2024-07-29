@@ -87,7 +87,10 @@
 		</profile>
 	</profiles>
 
+
+
 	<build>
+		<finalName>dyma-tennis</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
