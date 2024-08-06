@@ -74,6 +74,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorization ->
                         authorization
                                 .requestMatchers("/healthcheck/**").permitAll()
+                                .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/accounts/login").permitAll()
