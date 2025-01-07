@@ -67,7 +67,7 @@ public class SecurityConfiguration {
                                         csp.policyDirectives("default-src 'self' data:; style-src 'self' 'unsafe-inline';") // Définit la politique de sécurité du contenu
                                 )
                                 .frameOptions(frameOptionsConfig -> frameOptionsConfig.deny()) // Empêche le site d'être affiché dans un iframe
-                                .permissionsPolicy(permissionsPolicyConfig -> permissionsPolicyConfig.policy(
+                                .permissionsPolicyHeader(permissionsPolicyConfig -> permissionsPolicyConfig.policy(
                                         "fullscreen=(self), geolocation=(), microphone=(), camera=()" // Définit les politiques de permissions
                                 ))
                 )

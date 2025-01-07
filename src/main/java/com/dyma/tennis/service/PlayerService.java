@@ -1,8 +1,8 @@
 package com.dyma.tennis.service;
 
-import com.dyma.tennis.Player;
-import com.dyma.tennis.PlayerToSave;
-import com.dyma.tennis.Rank;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.Rank;
 import com.dyma.tennis.data.PlayerEntity;
 import com.dyma.tennis.data.PlayerRepository;
 import org.slf4j.Logger;

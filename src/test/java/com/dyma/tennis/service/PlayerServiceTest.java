@@ -1,6 +1,6 @@
 package com.dyma.tennis.service;
 
-import com.dyma.tennis.Player;
+import com.dyma.tennis.model.Player;
 import com.dyma.tennis.data.PlayerEntityList;
 import com.dyma.tennis.data.PlayerRepository;
 import org.assertj.core.api.Assertions;

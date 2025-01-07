@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   dyma-postgresql:
     image: postgres:15

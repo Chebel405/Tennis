@@ -1,7 +1,7 @@
 package com.dyma.tennis.data;
 
-import com.dyma.tennis.Player;
-import com.dyma.tennis.Rank;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.Rank;
 
 import java.time.LocalDate;
 import java.time.Month;

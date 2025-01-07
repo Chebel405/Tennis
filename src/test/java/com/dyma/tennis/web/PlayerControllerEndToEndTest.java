@@ -1,7 +1,7 @@
 package com.dyma.tennis.web;
 
-import com.dyma.tennis.Player;
-import com.dyma.tennis.PlayerToSave;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.PlayerToSave;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
