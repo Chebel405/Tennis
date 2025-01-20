@@ -11,9 +11,6 @@ CREATE TABLE player
     PRIMARY KEY (id)
 );
 
-ALTER SEQUENCE player_id_seq OWNED BY player.id;
-
-ALTER TABLE IF EXISTS public.player OWNER to postgres;
 
 CREATE SEQUENCE user_id_seq;
 
@@ -26,17 +23,11 @@ CREATE TABLE dyma_user (
     PRIMARY KEY (id)
 );
 
-ALTER SEQUENCE player_id_seq OWNED BY dyma_user.id;
-
-ALTER TABLE IF EXISTS public.dyma_user OWNER to postgres;
-
 CREATE TABLE dyma_role
 (
     name character varying(50) NOT NULL,
     PRIMARY KEY (name)
 );
-
-ALTER TABLE IF EXISTS public.dyma_role OWNER to postgres;
 
 
 CREATE TABLE dyma_user_role
@@ -50,4 +41,3 @@ CREATE TABLE dyma_user_role
         REFERENCES public.dyma_user (id)
 );
 
-ALTER TABLE IF EXISTS public.dyma_user_role OWNER to postgres;
