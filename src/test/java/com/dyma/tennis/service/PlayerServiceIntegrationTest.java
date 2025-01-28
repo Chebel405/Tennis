@@ -73,7 +73,7 @@ public class PlayerServiceIntegrationTest {
         Assertions.assertThat(exception.getMessage()).contains("Player with  " +
                 "firstName John " +
                 "lastName Doe " +
-                "and birthDate 2000-01-01 already exists. ");
+                "and birthDate 2000-01-01 already exists.");
 
     }
     @Test
