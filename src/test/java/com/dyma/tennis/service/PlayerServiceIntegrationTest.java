@@ -18,7 +18,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-// Dirty.. met à jour la bdd
 public class PlayerServiceIntegrationTest {
     @Autowired
     private PlayerService playerService;
