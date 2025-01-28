@@ -14,6 +14,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -59,11 +60,11 @@ public class PlayerServiceTest {
     @Test
     public void shouldRetrievePlayer(){
         // Given
-        String playerToRetrieve = "nadal";
-        Mockito.when(playerRepository.findOneByLastNameIgnoreCase(playerToRetrieve)).thenReturn(Optional.of(PlayerEntityList.RAFAEL_NADAL));
+        UUID playerToRetrieve = UUID.fromString("b466c6f7-52c6-4f25-b00d-c562be41311e");
+        Mockito.when(playerRepository.findOneByIdentifier(playerToRetrieve)).thenReturn(Optional.of(PlayerEntityList.RAFAEL_NADAL));
 
         // when
-        Player retrievedPlayer = playerService.getByLastName(playerToRetrieve);
+        Player retrievedPlayer = playerService.getByIdentifier(playerToRetrieve);
 
         //then
         Assertions.assertThat(retrievedPlayer.lastName()).isEqualTo("Nadal");
@@ -74,14 +75,14 @@ public class PlayerServiceTest {
     @Test
     public void shouldFailToRetrieved_WhenPlayerDoesNotExist(){
         //Given
-        String unknownPlayer = "doe";
-        Mockito.when(playerRepository.findOneByLastNameIgnoreCase(unknownPlayer)).thenReturn(Optional.empty());
+        UUID unknownPlayer = UUID.fromString("aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb");
+        Mockito.when(playerRepository.findOneByIdentifier(unknownPlayer)).thenReturn(Optional.empty());
 
         //When / Then
         Exception exception = assertThrows(PlayerNotFoundException.class, () -> {
-            playerService.getByLastName(unknownPlayer);
+            playerService.getByIdentifier(unknownPlayer);
         });
-        Assertions.assertThat(exception.getMessage()).isEqualTo("Player with last name doe couldn't be found");
+        Assertions.assertThat(exception.getMessage()).isEqualTo("Player with identifier aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb couldn't be found");
 
     }
 }

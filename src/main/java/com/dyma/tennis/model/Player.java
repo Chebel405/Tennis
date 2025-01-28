@@ -9,9 +9,11 @@ import jakarta.validation.constraints.PastOrPresent;
 
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record Player(
         // @NotBlank empêche les espaces
+        @NotNull(message = "Identifier est obligatoire")UUID identifier,
         @NotBlank(message = "Firstname est obligatoire") String firstName,
         @NotBlank(message = "Lastname est obligatoire") String lastName,
         // @PastOrPresent Obliger à ce que la date soit dans le présent ou dans le passé

@@ -1,6 +1,7 @@
 package com.dyma.tennis.data;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "player", schema = "public")
@@ -10,6 +11,9 @@ public class PlayerEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "identifier", nullable = false, unique = true)
+    private UUID identifier;
 
     @Column(name = "last_name", length = 50, nullable = false)
     private String lastName;
@@ -29,7 +33,8 @@ public class PlayerEntity {
     public PlayerEntity() {
     }
 
-    public PlayerEntity(String lastName, String firstName, LocalDate birthDate, Integer points, Integer rank) {
+    public PlayerEntity( UUID identifier, String lastName, String firstName, LocalDate birthDate, Integer points, Integer rank) {
+        this.identifier = identifier;
         this.lastName = lastName;
         this.firstName = firstName;
         this.birthDate = birthDate;
@@ -37,8 +42,9 @@ public class PlayerEntity {
         this.rank = rank;
     }
 
-    public PlayerEntity(Long id, String lastName, String firstName, LocalDate birthDate, Integer points, Integer rank) {
+    public PlayerEntity(Long id, UUID identifier, String lastName, String firstName, LocalDate birthDate, Integer points, Integer rank) {
         this.id = id;
+        this.identifier = identifier;
         this.lastName = lastName;
         this.firstName = firstName;
         this.birthDate = birthDate;
@@ -46,10 +52,20 @@ public class PlayerEntity {
         this.rank = rank;
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
+
+    public UUID getIdentifier() {
+        return identifier;
+    }
 
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getFirstName() {

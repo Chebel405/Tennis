@@ -3,10 +3,16 @@ package com.dyma.tennis.data;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<PlayerEntity, Long> {
     // Declaration de la méthode
-    Optional<PlayerEntity> findOneByLastNameIgnoreCase(String lastName);
+    Optional<PlayerEntity> findOneByIdentifier(UUID identifier);
+
+    Optional<PlayerEntity> findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(String firstName, String lastName, LocalDate birthdate);
+
+
 }

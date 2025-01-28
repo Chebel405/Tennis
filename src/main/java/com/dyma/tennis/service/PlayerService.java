@@ -1,7 +1,8 @@
 package com.dyma.tennis.service;
 
 import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.PlayerToCreate;
+import com.dyma.tennis.model.PlayerToUpdate;
 import com.dyma.tennis.model.Rank;
 import com.dyma.tennis.data.PlayerEntity;
 import com.dyma.tennis.data.PlayerRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +37,7 @@ public class PlayerService {
         try {
             return playerRepository.findAll().stream()
                     .map(player -> new Player(
+                            player.getIdentifier(),
                             player.getFirstName(),
                             player.getLastName(),
                             player.getBirthDate(),
@@ -50,23 +53,24 @@ public class PlayerService {
     }
 
     // Récupérer un joueur par son nom de famille
-    public Player getByLastName(String lastName) {
-        log.info("Invoking getByLastName with lastName={}", lastName);
+    public Player getByIdentifier(UUID identifier) {
+        log.info("Invoking getByIdentifier with identifier={}", identifier);
         try {
-            Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(lastName);
+            Optional<PlayerEntity> player = playerRepository.findOneByIdentifier(identifier);
             if (player.isEmpty()) {
-                log.warn("Couldn't find player with lastName={}", lastName);
-                throw new PlayerNotFoundException(lastName);
+                log.warn("Couldn't find player with identifier={}", identifier);
+                throw new PlayerNotFoundException(identifier);
             }
 
             return new Player(
+                    player.get().getIdentifier(),
                     player.get().getFirstName(),
                     player.get().getLastName(),
                     player.get().getBirthDate(),
                     new Rank(player.get().getRank(), player.get().getPoints())
             );
         } catch (DataAccessException e) {
-            log.error("Couldn't find player with lastName={}", lastName, e);
+            log.error("Couldn't find player with identifer={}", identifier, e);
             throw new PlayerDataRetrievalException(e);
         }
     }
@@ -79,24 +83,27 @@ public class PlayerService {
      * Recalculer l'ensemble des classements
      * Mettre à jour tous les joueurs
      *
-     * @param playerToSave
+     * @param playerToCreate
      * @return
      */
-    public Player create(PlayerToSave playerToSave) {
-        log.info("Invoking create with playerToSave={}", playerToSave);
+    public Player create(PlayerToCreate playerToCreate) {
+        log.info("Invoking create with playerToCreate={}", playerToCreate);
         //Vérifier que le joueur n'existe pas
         try {
-            Optional<PlayerEntity> playerToCreate = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
-            if (playerToCreate.isPresent()) {
-                log.warn("Player to create exist lastName={} exist already", playerToSave.lastName());
-                throw new PlayerAlreadyExistsException(playerToSave.lastName());
+            Optional<PlayerEntity> player = playerRepository.findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(
+                    playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
+            if (player.isPresent()) {
+                log.warn("Player to create with firstName={} and lastName={} and birthDate={} exist already",
+                        playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
+                throw new PlayerAlreadyExistsException(playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
             }
 
-            PlayerEntity playerEntity = new PlayerEntity(
-                    playerToSave.lastName(),
-                    playerToSave.firstName(),
-                    playerToSave.birthDate(),
-                    playerToSave.points(),
+            PlayerEntity playerToRegister= new PlayerEntity(
+                    UUID.randomUUID(),
+                    playerToCreate.lastName(),
+                    playerToCreate.firstName(),
+                    playerToCreate.birthDate(),
+                    playerToCreate.points(),
                     999999999);
 
             /**
@@ -105,42 +112,51 @@ public class PlayerService {
              *      PlayerRepository : Mettre à jour les joueurs
              *      GetByLastName retourne le joueur créé
              */
-            playerRepository.save(playerEntity);
 
-            RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
-            List<PlayerEntity> updatedPlayers = rankingCalculator.getNewPlayersRanking();
-            playerRepository.saveAll(updatedPlayers);
-
-            return getByLastName(playerEntity.getLastName());
-        } catch (DataAccessException e) {
-            log.error("Couldn't create player {}", playerToSave, e);
-            throw new PlayerDataRetrievalException(e);
-        }
-
-    }
-
-
-    //Mise à jour d'un joueur
-    public Player update(PlayerToSave playerToSave) {
-        log.info("Invoking update with playerToSave={}", playerToSave);
-        try {
-            Optional<PlayerEntity> playerToUpdate = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
-            if (playerToUpdate.isEmpty()) {
-                log.warn("Couldn't find player to update with lastName={}", playerToSave.lastName());
-                throw new PlayerNotFoundException(playerToSave.lastName());
-            }
-            playerToUpdate.get().setFirstName(playerToSave.firstName());
-            playerToUpdate.get().setBirthDate(playerToSave.birthDate());
-            playerToUpdate.get().setPoints(playerToSave.points());
-            PlayerEntity updatedPlayer = playerRepository.save(playerToUpdate.get());
+            PlayerEntity registeredPlayer = playerRepository.save(playerToRegister);
 
             RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
             List<PlayerEntity> newRanking = rankingCalculator.getNewPlayersRanking();
             playerRepository.saveAll(newRanking);
 
-            return getByLastName(updatedPlayer.getLastName());
+            return this.getByIdentifier(registeredPlayer.getIdentifier());
         } catch (DataAccessException e) {
-            log.error("Couldn't update player {}", playerToSave, e);
+            log.error("Could not create player={}", playerToCreate, e);
+            throw new PlayerDataRetrievalException(e);
+        }
+    }
+
+
+    //Mise à jour d'un joueur
+    public Player update(PlayerToUpdate playerToUpdate) {
+        log.info("Invoking update with playerToUpdate={}", playerToUpdate);
+        try {
+            Optional<PlayerEntity> existingPlayer= playerRepository.findOneByIdentifier(playerToUpdate.identifier());
+            if (existingPlayer.isEmpty()) {
+                log.warn("Couldn't find player to update with identifier={}", playerToUpdate.identifier());
+                throw new PlayerNotFoundException(playerToUpdate.identifier());
+            }
+
+            Optional<PlayerEntity> potentiallyDuplicatedPlayer = playerRepository.findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
+            if(potentiallyDuplicatedPlayer.isPresent() && !potentiallyDuplicatedPlayer.get().getIdentifier().equals(playerToUpdate.identifier())){
+                log.warn("Player to update with firstName={} lastName={} and birthDate={} already exists ", playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
+                throw new PlayerAlreadyExistsException(playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
+            }
+
+
+            existingPlayer.get().setFirstName(playerToUpdate.firstName());
+            existingPlayer.get().setLastName(playerToUpdate.lastName());
+            existingPlayer.get().setBirthDate(playerToUpdate.birthDate());
+            existingPlayer.get().setPoints(playerToUpdate.points());
+            PlayerEntity updatedPlayer = playerRepository.save(existingPlayer.get());
+
+            RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
+            List<PlayerEntity> newRanking = rankingCalculator.getNewPlayersRanking();
+            playerRepository.saveAll(newRanking);
+
+            return getByIdentifier(updatedPlayer.getIdentifier());
+        } catch (DataAccessException e) {
+            log.error("Couldn't update player {}", playerToUpdate, e);
             throw new PlayerDataRetrievalException(e);
         }
 
@@ -153,16 +169,16 @@ public class PlayerService {
      * 3/ Recalculer l'ensemble des classements
      * 4/ Mettre à jour les joueurs pour tenir compte du nouveau classement
      *
-     * @param lastName
+     * @param identifier
      */
 
-    public void delete(String lastName) {
-        log.info("Invoking delete with lastName={}", lastName);
+    public void delete(UUID identifier) {
+        log.info("Invoking delete with identifier={}", identifier);
         try {
-            Optional<PlayerEntity> playerDelete = playerRepository.findOneByLastNameIgnoreCase(lastName);
+            Optional<PlayerEntity> playerDelete = playerRepository.findOneByIdentifier(identifier);
             if (playerDelete.isEmpty()) {
-                log.warn("Couldn't find player to delete with lastName={}", lastName);
-                throw new PlayerNotFoundException(lastName);
+                log.warn("Couldn't find player to delete with identifier={}", identifier);
+                throw new PlayerNotFoundException(identifier);
             }
 
             playerRepository.delete(playerDelete.get());
@@ -171,7 +187,7 @@ public class PlayerService {
             List<PlayerEntity> newRanking = rankingCalculator.getNewPlayersRanking();
             playerRepository.saveAll(newRanking);
         } catch (DataAccessException e) {
-            log.error("Couldn't delete player with lastName={}", lastName, e);
+            log.error("Couldn't delete player with identifier={}", identifier, e);
             throw new PlayerDataRetrievalException(e);
         }
 

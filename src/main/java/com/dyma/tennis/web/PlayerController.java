@@ -1,7 +1,8 @@
 package com.dyma.tennis.web;
 
 import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.PlayerToCreate;
+import com.dyma.tennis.model.PlayerToUpdate;
 import com.dyma.tennis.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Tag(name="Tennis Players API")
@@ -37,65 +39,65 @@ public class PlayerController {
         return playerService.getAllPlayers();
     }
 
-    @Operation(summary = "Finds a player with lastName", description = "Finds player with lastName")
+    @Operation(summary = "Finds a player with lastName", description = "Finds a player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Player.class))}),
 
-            @ApiResponse(responseCode = "404", description = "Player with lastName wasn't found",
+            @ApiResponse(responseCode = "404", description = "Player with identifier wasn't found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Error.class))}),
             @ApiResponse(responseCode = "403", description = "This user isn't authorized to perform this action.")
     })
 
     //
-    @GetMapping("{lastName}")
-    public Player getByLastName(@PathVariable("lastName") String lastName){
-        return playerService.getByLastName(lastName);
+    @GetMapping("{identifier}")
+    public Player getByIdentifier(@PathVariable("identifier")UUID identifier){
+        return playerService.getByIdentifier(identifier);
     }
 
     @Operation(summary = "Creates a player", description = "Creates a player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created a player",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PlayerToSave.class))}),
-            @ApiResponse(responseCode = "400", description = "Player exists",
+                            schema = @Schema(implementation = PlayerToCreate.class))}),
+            @ApiResponse(responseCode = "400", description = "Player already exists",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Error.class))}),
             @ApiResponse(responseCode = "403", description = "This user isn't authorized to perform this action.")
     })
     @PostMapping
-    public Player createPlayer(@RequestBody @Valid PlayerToSave playerToSave){
+    public Player createPlayer(@RequestBody @Valid PlayerToCreate playerToCreate){
 
-        return playerService.create(playerToSave);
+        return playerService.create(playerToCreate);
     }
 
     @Operation(summary = "Updates a player", description = "Updates a player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated a player",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PlayerToSave.class))}),
-            @ApiResponse(responseCode = "404", description = "Player with lastName wasn't found",
+                            schema = @Schema(implementation = PlayerToUpdate.class))}),
+            @ApiResponse(responseCode = "404", description = "Player with  identifier wasn't found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Error.class))}),
             @ApiResponse(responseCode = "403", description = "This user isn't authorized to perform this action.")
     })
     @PutMapping
-    public Player updatePlayer(@RequestBody @Valid PlayerToSave playerToSave){
-        return playerService.update(playerToSave);
+    public Player updatePlayer(@RequestBody @Valid PlayerToUpdate playerToUpdate){
+        return playerService.update(playerToUpdate);
     }
 
     @Operation(summary = "Deletes a player", description = "Deletes a player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player has been deleted"),
-            @ApiResponse(responseCode = "404", description = "Player with lastName wasn't found",
+            @ApiResponse(responseCode = "404", description = "Player with identifier wasn't found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Error.class))}),
             @ApiResponse(responseCode = "403", description = "This user isn't authorized to perform this action.")
     })
-    @DeleteMapping("{lastName}")
-    public void DeletePlayerByLastName(@PathVariable("lastName") String lastName){
-        playerService.delete(lastName);
+    @DeleteMapping("{identifier}")
+    public void DeletePlayerByLastName(@PathVariable("identifier") UUID identifier){
+        playerService.delete(identifier);
     }
 }

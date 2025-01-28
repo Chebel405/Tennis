@@ -1,7 +1,9 @@
 package com.dyma.tennis.service;
 
+import java.util.UUID;
+
 public class PlayerNotFoundException extends RuntimeException{
-    public PlayerNotFoundException(String lastName) {
-        super("Player with last name " + lastName + " couldn't be found");
+    public PlayerNotFoundException(UUID identifier) {
+        super("Player with identifier " + identifier + " couldn't be found");
     }
 }
