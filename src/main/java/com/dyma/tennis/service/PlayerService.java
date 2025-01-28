@@ -19,22 +19,35 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Service pour gérer les opérations liées aux joueurs.
+ * Fournit des méthodes pour créer, mettre à jour, récupérer et supprimer des joueurs.
+ * Intègre des logs pour surveiller le comportement et faciliter le débogage.
+ */
 @Service
 public class PlayerService {
-    //Genère des logs
+
+    // Logger pour capturer les événements et erreurs dans le service.
     private final Logger log = LoggerFactory.getLogger(PlayerService.class);
 
+    // Dépendance vers le repository pour effectuer les opérations sur la base de données.
     @Autowired
     private PlayerRepository playerRepository;
 
+    // Constructeur pour injecter le PlayerRepository.
     public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }
 
-    //Affichage de la liste dans l'ordre de position
+    /**
+     * Récupère tous les joueurs, triés par leur position dans le classement.
+     *
+     * @return Une liste de joueurs triés.
+     */
     public List<Player> getAllPlayers() {
         log.info("Invoking getAllPlayers()");
         try {
+            // Conversion des entités PlayerEntity en objets Player, triés par position.
             return playerRepository.findAll().stream()
                     .map(player -> new Player(
                             player.getIdentifier(),
@@ -52,16 +65,22 @@ public class PlayerService {
 
     }
 
-    // Récupérer un joueur par son nom de famille
+    /**
+     * Récupère un joueur par son identifiant unique.
+     *
+     * @param identifier L'identifiant unique du joueur.
+     * @return Le joueur correspondant.
+     */
     public Player getByIdentifier(UUID identifier) {
         log.info("Invoking getByIdentifier with identifier={}", identifier);
         try {
+            // Recherche du joueur dans la base de données.
             Optional<PlayerEntity> player = playerRepository.findOneByIdentifier(identifier);
             if (player.isEmpty()) {
                 log.warn("Couldn't find player with identifier={}", identifier);
                 throw new PlayerNotFoundException(identifier);
             }
-
+            // Conversion de PlayerEntity en Player.
             return new Player(
                     player.get().getIdentifier(),
                     player.get().getFirstName(),
@@ -77,19 +96,17 @@ public class PlayerService {
 
 
     /**
-     * Création d'un joueur
-     * Vérifier que le joueur n'existe pas déjà
-     * Créer le nouveau joueur
-     * Recalculer l'ensemble des classements
-     * Mettre à jour tous les joueurs
+     * Crée un nouveau joueur après vérification qu'il n'existe pas déjà.
+     * Recalcule ensuite le classement des joueurs.
      *
-     * @param playerToCreate
-     * @return
+     * @param playerToCreate Les informations du joueur à créer.
+     * @return Le joueur nouvellement créé.
      */
     public Player create(PlayerToCreate playerToCreate) {
         log.info("Invoking create with playerToCreate={}", playerToCreate);
         //Vérifier que le joueur n'existe pas
         try {
+            // Vérification de l'existence du joueur dans la base de données.
             Optional<PlayerEntity> player = playerRepository.findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(
                     playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
             if (player.isPresent()) {
@@ -98,6 +115,7 @@ public class PlayerService {
                 throw new PlayerAlreadyExistsException(playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
             }
 
+            // Création d'une nouvelle entité PlayerEntity.
             PlayerEntity playerToRegister= new PlayerEntity(
                     UUID.randomUUID(),
                     playerToCreate.lastName(),
@@ -113,12 +131,15 @@ public class PlayerService {
              *      GetByLastName retourne le joueur créé
              */
 
+            // Enregistrement du joueur dans la base de données.
             PlayerEntity registeredPlayer = playerRepository.save(playerToRegister);
 
+            // Recalcule le classement des joueurs après l'ajout.
             RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
             List<PlayerEntity> newRanking = rankingCalculator.getNewPlayersRanking();
             playerRepository.saveAll(newRanking);
 
+            // Retourne le joueur nouvellement créé.
             return this.getByIdentifier(registeredPlayer.getIdentifier());
         } catch (DataAccessException e) {
             log.error("Could not create player={}", playerToCreate, e);
@@ -127,33 +148,42 @@ public class PlayerService {
     }
 
 
-    //Mise à jour d'un joueur
+    /**
+     * Met à jour les informations d'un joueur existant et recalcule les classements.
+     *
+     * @param playerToUpdate Les informations mises à jour du joueur.
+     * @return Le joueur mis à jour.
+     */
     public Player update(PlayerToUpdate playerToUpdate) {
         log.info("Invoking update with playerToUpdate={}", playerToUpdate);
         try {
+            // Recherche du joueur existant.
             Optional<PlayerEntity> existingPlayer= playerRepository.findOneByIdentifier(playerToUpdate.identifier());
             if (existingPlayer.isEmpty()) {
                 log.warn("Couldn't find player to update with identifier={}", playerToUpdate.identifier());
                 throw new PlayerNotFoundException(playerToUpdate.identifier());
             }
 
+            //Vérification des doublons potentiels avec d'autres joueurs.
             Optional<PlayerEntity> potentiallyDuplicatedPlayer = playerRepository.findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
             if(potentiallyDuplicatedPlayer.isPresent() && !potentiallyDuplicatedPlayer.get().getIdentifier().equals(playerToUpdate.identifier())){
                 log.warn("Player to update with firstName={} lastName={} and birthDate={} already exists ", playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
                 throw new PlayerAlreadyExistsException(playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
             }
 
-
+            // Mise à jour des informations du joueur.
             existingPlayer.get().setFirstName(playerToUpdate.firstName());
             existingPlayer.get().setLastName(playerToUpdate.lastName());
             existingPlayer.get().setBirthDate(playerToUpdate.birthDate());
             existingPlayer.get().setPoints(playerToUpdate.points());
             PlayerEntity updatedPlayer = playerRepository.save(existingPlayer.get());
 
+            // Recalcule et met à jour les classements.
             RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
             List<PlayerEntity> newRanking = rankingCalculator.getNewPlayersRanking();
             playerRepository.saveAll(newRanking);
 
+            // Retourne le joueur mis à jour.
             return getByIdentifier(updatedPlayer.getIdentifier());
         } catch (DataAccessException e) {
             log.error("Couldn't update player {}", playerToUpdate, e);
@@ -169,7 +199,7 @@ public class PlayerService {
      * 3/ Recalculer l'ensemble des classements
      * 4/ Mettre à jour les joueurs pour tenir compte du nouveau classement
      *
-     * @param identifier
+     * @param identifier L'identifiant du joueur
      */
 
     public void delete(UUID identifier) {
