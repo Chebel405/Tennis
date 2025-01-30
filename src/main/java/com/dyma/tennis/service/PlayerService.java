@@ -94,7 +94,6 @@ public class PlayerService {
         }
     }
 
-
     /**
      * Crée un nouveau joueur après vérification qu'il n'existe pas déjà.
      * Recalcule ensuite le classement des joueurs.
