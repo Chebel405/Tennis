@@ -69,7 +69,6 @@ public class PlayerController {
     })
     @PostMapping
     public Player createPlayer(@RequestBody @Valid PlayerToCreate playerToCreate){
-
         return playerService.create(playerToCreate);
     }
 

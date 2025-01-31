@@ -82,6 +82,10 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST,"/players/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.PUT,"/players/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.DELETE,"/players/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET,"/tournaments/**").hasAuthority("ROLE_USER")
+                                .requestMatchers(HttpMethod.POST,"/tournaments/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.PUT,"/tournaments/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.DELETE,"/tournaments/**").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated());
         return http.build();
     }
