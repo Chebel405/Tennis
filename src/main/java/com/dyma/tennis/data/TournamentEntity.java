@@ -3,6 +3,8 @@ package com.dyma.tennis.data;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +26,8 @@ public class TournamentEntity {
     private Integer prizeMoney;
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
-
+    @ManyToMany(mappedBy = "tournaments", fetch = FetchType.EAGER)
+    private Set<PlayerEntity> players = new HashSet<>();
     public TournamentEntity(){
     }
 
@@ -87,5 +90,17 @@ public class TournamentEntity {
 
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
+    }
+
+    public Set<PlayerEntity> getPlayers() {
+        return players;
+    }
+
+    public boolean isFull(){
+        return capacity == players.size() - 1;
+    }
+
+    public boolean hasPlayer(PlayerEntity playerToRegister){
+        return players.contains(playerToRegister);
     }
 }

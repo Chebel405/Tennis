@@ -38,6 +38,12 @@ public class TournamentControllerErrorHandler {
         return new Error(ex.getMessage());
     }
 
+    @ExceptionHandler(TournamentRegistrationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Error handleTournamentRegistrationException(TournamentRegistrationException ex){
+        return new Error(ex.getMessage());
+    }
+
     @ExceptionHandler(TournamentDataRetrievalException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Error handleTournamentAlreadyExistsException(TournamentDataRetrievalException ex){

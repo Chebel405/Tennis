@@ -1,6 +1,7 @@
 package com.dyma.tennis.web;
 
 import com.dyma.tennis.model.*;
+import com.dyma.tennis.service.RegistrationService;
 import com.dyma.tennis.service.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -23,6 +24,9 @@ import java.util.UUID;
 public class TournamentController {
     @Autowired
     private TournamentService tournamentService;
+
+    @Autowired
+    private RegistrationService registrationService;
 
     @Operation(summary = "Finds tournaments", description = "Finds tournaments")
     @ApiResponses(value = {
@@ -96,6 +100,17 @@ public class TournamentController {
     }
 
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player is registered to the tournament",
+                    content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Player cannot be registered to the tournament.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))}),
+            @ApiResponse(responseCode = "403", description = "This user isn't authorized to perform this action.")
+})
+    @PostMapping("{tournamentIdentifier}/players/{playerIdentifier}")
+    public void register(@PathVariable("tournamentIdentifier") UUID tournamentIdentifier, @PathVariable("playerIdentifier") UUID playerToRegister){
+        registrationService.register(tournamentIdentifier, playerToRegister);
 
-
+    }
 }

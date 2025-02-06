@@ -32,11 +32,16 @@ public class PlayerService {
 
     // Dépendance vers le repository pour effectuer les opérations sur la base de données.
     @Autowired
-    private PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
 
-    // Constructeur pour injecter le PlayerRepository.
-    public PlayerService(PlayerRepository playerRepository) {
+    @Autowired
+    private final PlayerMapper playerMapper;
+
+    // Constructeur pour injecter le PlayerRepository, PlayerMapper.
+    public PlayerService(PlayerRepository playerRepository, PlayerMapper playerMapper) {
+
         this.playerRepository = playerRepository;
+        this.playerMapper = playerMapper;
     }
 
     /**
@@ -49,14 +54,8 @@ public class PlayerService {
         try {
             // Conversion des entités PlayerEntity en objets Player, triés par position.
             return playerRepository.findAll().stream()
-                    .map(player -> new Player(
-                            player.getIdentifier(),
-                            player.getFirstName(),
-                            player.getLastName(),
-                            player.getBirthDate(),
-                            new Rank(player.getRank(), player.getPoints())
-                    ))
-                    .sorted(Comparator.comparing(player -> player.rank().position()))
+                    .map(playerMapper::playerEntityToPlayer)
+                    .sorted(Comparator.comparing(player -> player.info().rank().position()))
                     .collect(Collectors.toList());
         } catch (DataAccessException e) {
             log.error("Couldn't retrieve players", e);
@@ -81,13 +80,7 @@ public class PlayerService {
                 throw new PlayerNotFoundException(identifier);
             }
             // Conversion de PlayerEntity en Player.
-            return new Player(
-                    player.get().getIdentifier(),
-                    player.get().getFirstName(),
-                    player.get().getLastName(),
-                    player.get().getBirthDate(),
-                    new Rank(player.get().getRank(), player.get().getPoints())
-            );
+            return playerMapper.playerEntityToPlayer(player.get());
         } catch (DataAccessException e) {
             log.error("Couldn't find player with identifer={}", identifier, e);
             throw new PlayerDataRetrievalException(e);

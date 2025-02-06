@@ -36,10 +36,10 @@ public class PlayerControllerTest {
                 .andExpect(status().isOk())
                 // 4 resultats corrects
                 .andExpect(jsonPath("$", hasSize(4)))
-                .andExpect(jsonPath("$[0].lastName", CoreMatchers.is("Nadal")))
-                .andExpect(jsonPath("$[1].lastName", CoreMatchers.is("Djokovic")))
-                .andExpect(jsonPath("$[2].lastName", CoreMatchers.is("Federer")))
-                .andExpect(jsonPath("$[3].lastName", CoreMatchers.is("Murray")));
+                .andExpect(jsonPath("$[0].info.lastName", CoreMatchers.is("Nadal")))
+                .andExpect(jsonPath("$[1].info.lastName", CoreMatchers.is("Djokovic")))
+                .andExpect(jsonPath("$[2].info.lastName", CoreMatchers.is("Federer")))
+                .andExpect(jsonPath("$[3].info.lastName", CoreMatchers.is("Murray")));
 
     }
     @Test
@@ -52,8 +52,8 @@ public class PlayerControllerTest {
         mockMvc.perform(get("/players/b466c6f7-52c6-4f25-b00d-c562be41311e"))
                 //On assure du status
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lastName", CoreMatchers.is("Nadal")))
-                .andExpect(jsonPath("$.rank.position", CoreMatchers.is(1)));
+                .andExpect(jsonPath("$.info.lastName", CoreMatchers.is("Nadal")))
+                .andExpect(jsonPath("$.info.rank.position", CoreMatchers.is(1)));
 
     }
 

@@ -56,8 +56,8 @@ public class PlayerControllerEndToEndTest {
 
 
         //Then
-        Assertions.assertThat(playerResponseEntity.getBody().lastName()).isEqualTo("Alcaraz");
-        Assertions.assertThat(playerResponseEntity.getBody().rank().position()).isEqualTo(2);
+        Assertions.assertThat(playerResponseEntity.getBody().info().lastName()).isEqualTo("Alcaraz");
+        Assertions.assertThat(playerResponseEntity.getBody().info().rank().position()).isEqualTo(2);
     }
 
     @Test
@@ -95,8 +95,8 @@ public class PlayerControllerEndToEndTest {
 
 
         //Then
-        Assertions.assertThat(playerResponseEntity.getBody().lastName()).isEqualTo("NadalTest");
-        Assertions.assertThat(playerResponseEntity.getBody().rank().position()).isEqualTo(3);
+        Assertions.assertThat(playerResponseEntity.getBody().info().lastName()).isEqualTo("NadalTest");
+        Assertions.assertThat(playerResponseEntity.getBody().info().rank().position()).isEqualTo(3);
     }
     @Test
     public void shouldDeletePlayer(){
@@ -111,7 +111,7 @@ public class PlayerControllerEndToEndTest {
 
         //Then
         Assertions.assertThat(playerResponseEntity.getBody())
-                .extracting("lastName", "rank.position")
+                .extracting("info.lastName", "info.rank.position")
                 .containsExactly(Tuple.tuple("NadalTest", 1), Tuple.tuple("FedererTest", 2));
 
 

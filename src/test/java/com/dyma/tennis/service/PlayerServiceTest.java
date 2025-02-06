@@ -26,7 +26,8 @@ public class PlayerServiceTest {
     @BeforeEach
     public void setUp(){
         MockitoAnnotations.openMocks(this);
-        playerService = new PlayerService(playerRepository);
+        PlayerMapper playerMapper = new PlayerMapper();
+        playerService = new PlayerService(playerRepository, playerMapper);
     }
     @Test
     public void shouldReturnPlayerRanking(){
@@ -41,7 +42,7 @@ public class PlayerServiceTest {
         //Then
         // Alors j'obtiens la list de mes joueurs triée
         Assertions.assertThat(allPlayers)
-                .extracting("lastName")
+                .extracting("info.lastName")
                 .containsExactly("Nadal", "Djokovic", "Federer", "Murray");
     }
 
@@ -67,9 +68,9 @@ public class PlayerServiceTest {
         Player retrievedPlayer = playerService.getByIdentifier(playerToRetrieve);
 
         //then
-        Assertions.assertThat(retrievedPlayer.lastName()).isEqualTo("Nadal");
-        Assertions.assertThat(retrievedPlayer.firstName()).isEqualTo("Rafael");
-        Assertions.assertThat(retrievedPlayer.rank().position()).isEqualTo(1);
+        Assertions.assertThat(retrievedPlayer.info().lastName()).isEqualTo("Nadal");
+        Assertions.assertThat(retrievedPlayer.info().firstName()).isEqualTo("Rafael");
+        Assertions.assertThat(retrievedPlayer.info().rank().position()).isEqualTo(1);
 
     }
     @Test

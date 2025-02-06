@@ -29,7 +29,8 @@ public class TournamentServiceTest {
     @BeforeEach
     public void setUp(){
         MockitoAnnotations.openMocks(this);
-        tournamentService = new TournamentService(tournamentRepository);
+        TournamentMapper tournamentMapper = new TournamentMapper();
+        tournamentService = new TournamentService(tournamentRepository, tournamentMapper);
     }
 
     @Test
@@ -59,7 +60,7 @@ public class TournamentServiceTest {
         Tournament retrievedTournament =  tournamentService.getByIdentifier(tournamentToRetrieve);
 
         //Then
-        Assertions.assertThat(retrievedTournament.name()).isEqualTo("French Open");
+        Assertions.assertThat(retrievedTournament.info().name()).isEqualTo("French Open");
 
     }
 

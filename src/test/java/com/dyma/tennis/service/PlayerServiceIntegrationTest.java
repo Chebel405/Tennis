@@ -39,14 +39,14 @@ public class PlayerServiceIntegrationTest {
 
         //When
         Player savedPlayer = playerService.create(playerToCreate);
-        Player createdPlayer = playerService.getByIdentifier(savedPlayer.identifier());
+        Player createdPlayer = playerService.getByIdentifier(savedPlayer.info().identifier());
 
         //Then
-        Assertions.assertThat(createdPlayer.firstName()).isEqualTo("John");
-        Assertions.assertThat(createdPlayer.lastName()).isEqualTo("Doe");
-        Assertions.assertThat(createdPlayer.birthDate()).isEqualTo(LocalDate.of(2000, Month.JANUARY, 1));
-        Assertions.assertThat(createdPlayer.rank().points()).isEqualTo(10000);
-        Assertions.assertThat(createdPlayer.rank().position()).isEqualTo(1);
+        Assertions.assertThat(createdPlayer.info().firstName()).isEqualTo("John");
+        Assertions.assertThat(createdPlayer.info().lastName()).isEqualTo("Doe");
+        Assertions.assertThat(createdPlayer.info().birthDate()).isEqualTo(LocalDate.of(2000, Month.JANUARY, 1));
+        Assertions.assertThat(createdPlayer.info().rank().points()).isEqualTo(10000);
+        Assertions.assertThat(createdPlayer.info().rank().position()).isEqualTo(1);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PlayerServiceIntegrationTest {
         Player updatedPlayer = playerService.getByIdentifier(nadalIdentifier);
 
         // Then
-        Assertions.assertThat(updatedPlayer.rank().position()).isEqualTo(3);
+        Assertions.assertThat(updatedPlayer.info().rank().position()).isEqualTo(3);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class PlayerServiceIntegrationTest {
 
         //Then
         Assertions.assertThat(allPlayers)
-                .extracting("lastName", "rank.position")
+                .extracting("info.lastName", "info.rank.position")
                 .containsExactly(Tuple.tuple("NadalTest", 1),Tuple.tuple("FedererTest", 2));
     }
 

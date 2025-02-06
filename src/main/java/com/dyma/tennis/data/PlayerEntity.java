@@ -1,6 +1,9 @@
 package com.dyma.tennis.data;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -29,6 +32,13 @@ public class PlayerEntity {
 
     @Column(name = "rank", nullable = false)
     private Integer rank;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "player_tournament",
+            joinColumns = {@JoinColumn(name = "player_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "tournament_id", referencedColumnName = "id")}
+    )
+    private Set<TournamentEntity> tournaments = new HashSet<>();
 
     public PlayerEntity() {
     }
@@ -98,5 +108,26 @@ public class PlayerEntity {
 
     public void setRank(Integer rank) {
         this.rank = rank;
+    }
+
+    public Set<TournamentEntity> getTournaments() {
+        return tournaments;
+    }
+
+    public void addTournament(TournamentEntity tournament){
+        this.tournaments.add(tournament);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlayerEntity that = (PlayerEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
