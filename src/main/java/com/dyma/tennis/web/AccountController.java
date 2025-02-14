@@ -1,11 +1,16 @@
 package com.dyma.tennis.web;
 
+import com.dyma.tennis.model.UserAuthentication;
 import com.dyma.tennis.model.UserCredentials;
+import com.dyma.tennis.security.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -25,10 +30,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/accounts")
 public class AccountController {
     @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
-
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtService jwtService;
     private final SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 
     /**
@@ -39,28 +43,15 @@ public class AccountController {
      * @param response L'objet HttpServletResponse de la réponse HTTP.
      */
     @PostMapping("/login")
-    public void login(UserCredentials credentials, HttpServletRequest request, HttpServletResponse response){
-        //Création d'un token d'authentification à partir des informations d'identification de l'utilisateur
+    public ResponseEntity<UserAuthentication> login(UserCredentials credentials, HttpServletRequest request, HttpServletResponse response){
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(credentials.login(), credentials.password());
+        Authentication authentication =  authenticationManager.authenticate(authenticationToken);
 
-        // Authentifie l'utilisateur avec le token d'authentification
-        Authentication authentication =  authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        //Obtient le contexte de sécurité actuel
-        SecurityContext securityContext =  SecurityContextHolder.getContext();
-        //Définit l'authentification dans le contexte de sécurité
-        securityContext.setAuthentication(authentication);
-
-        //Sauvegarde le contexte de sécurité dans la session HTTP
-        securityContextRepository.saveContext(securityContext, request, response);
-    }
-    @GetMapping("/logout")
-    public void logout(@RequestBody @Valid Authentication authentication, HttpServletRequest request, HttpServletResponse response){
-        securityContextLogoutHandler.logout(request, response, authentication);
+        String jwt = jwtService.createToken(authentication);
+        return new ResponseEntity<>(
+                new UserAuthentication(authentication.getName(), jwt),
+                HttpStatus.OK
+        );
 
     }
-
-
-
-
 }
