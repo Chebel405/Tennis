@@ -15,23 +15,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.exception.ExceptionUtils.getMessage;
 
 
 /**
@@ -41,74 +25,8 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getMessage;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
-    @Value("${jwt.base64-secret}")
-    private String jwtSecret;
-
     @Autowired
-    private DymaUserDetailsService dymaUserDetailsService;
-
-    /**
-     * Définit un bean PasswordEncoder qui utilise BCrypt pour hacher les mots de passe.
-     *
-     * @return un PasswordEncoder qui utilise BCrypt.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * Configure le AuthentificationManager avec un DaoAuthenticationProvider.
-     *
-     * @param userDetailsService le service pour récupérer les informations de l'utilisateur.
-     * @param passwordEncoder l'encodeur de mots de passe.
-     * @return un AuthenticationManager configuré
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(dymaUserDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(authenticationProvider);
-    }
-    @Bean
-    public JwtEncoder jwtEncoder(){
-        return new NimbusJwtEncoder(new ImmutableSecret<>(getSecretKey()));
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder(){
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
-                .withSecretKey(getSecretKey())
-                .macAlgorithm(SecurityUtils.JWT_ALGORITHM)
-                .build();
-        return token -> {
-            try {
-                return jwtDecoder.decode(token);
-            } catch (Exception e){
-                log.error("Conldn't decode JWT : {}", e.getMessage());
-                throw e;
-            }
-        };
-    }
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter(){
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            return jwt.getClaimAsStringList(SecurityUtils.AUTHORITIES_CLAIM_KEY)
-                    .stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-        });
-        return jwtAuthenticationConverter;
-    }
-
-    private SecretKey getSecretKey(){
-        byte[] keyBytes = Base64.from(jwtSecret).decode();
-        return new SecretKeySpec(keyBytes, 0, keyBytes.length, SecurityUtils.JWT_ALGORITHM.getName());
-    }
+    private KeycloakTokenConverter keycloakTokenConverter;
 
     /**
      * Configure la chaîne de filtres de sécurité pour l'application.
@@ -138,7 +56,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
-                                .requestMatchers("/accounts/login").permitAll()
+                                .requestMatchers("/accounts/token").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/players/**").hasAuthority("ROLE_USER")
                                 .requestMatchers(HttpMethod.POST,"/players/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.PUT,"/players/**").hasAuthority("ROLE_ADMIN")
@@ -152,7 +70,8 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                                jwt.jwtAuthenticationConverter(keycloakTokenConverter))
+                );
         return http.build();
     }
 }
