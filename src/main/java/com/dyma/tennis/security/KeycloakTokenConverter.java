@@ -19,14 +19,22 @@ import java.util.stream.Stream;
 @Component
 public class KeycloakTokenConverter implements Converter<Jwt, JwtAuthenticationToken> {
 
+    // Récupère l'ID du client à partir du fichier de configuration application.properties ou application.yml
     @Value("${jwt.auth.client-id}")
     private String clientId;
 
+    // Récupère l'attribut principal (nom d'utilisateur) du token
     @Value("${jwt.auth.principal-attribute}")
     private String principalAttribute;
 
+    // Convertisseur par défaut des autorités JWT de Spring Security
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
+    /**
+     * Convertit un JWT en un JwtAuthenticationToken contenant les rôles et les autorités.
+     * @param jwt Le token JWT à convertir.
+     * @return Un objet JwtAuthenticationToken contenant l'utilisateur authentifié et ses rôles.
+     */
     @Override
     public JwtAuthenticationToken convert(Jwt jwt) {
         Collection<String> roles = Optional.ofNullable(jwt.getClaimAsMap("resource_access"))
