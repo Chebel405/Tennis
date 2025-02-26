@@ -10,19 +10,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * Controller pour gérer les opérations liées aux comptes utilisateurs.
- */
-
-@Tag(name="Accounts API")
+@Tag(name = "Accounts API")
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
@@ -65,6 +67,4 @@ public class AccountController {
 
         return ResponseEntity.ok(new UserAuthentication(credentials.login(), accessToken));
     }
-
-
 }
